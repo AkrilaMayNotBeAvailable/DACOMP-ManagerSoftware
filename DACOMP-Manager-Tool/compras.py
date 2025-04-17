@@ -56,6 +56,9 @@ class TelaCompras(ctk.CTkFrame):
 
         campos['abrir_caixa'] = ctk.CTkButton(campos['formulario'], text="Abrir Caixa", command=self.abrir_novo_caixa)
         campos['abrir_caixa'].grid(row=14, column=0, padx=5, pady=(10, 0), sticky="we")
+        
+        campos['abrir_tipos'] = ctk.CTkButton(campos['formulario'], text="Abrir Tipos", command=self.abrir_tela_tipos)
+        campos['abrir_tipos'].grid(row=16, column=0, padx=5, pady=(10, 0), sticky="we")
 
         return campos
 
@@ -121,4 +124,8 @@ class TelaCompras(ctk.CTkFrame):
 
     def abrir_novo_caixa(self):
         self.master.abrir_tela_caixa()
+        #messagebox.showinfo("Selecionado", f"Você selecionou a compra {id_compra[0]} - {id_compra[1]} - {id_compra[2]}")
+        
+    def abrir_tela_tipos(self):
+        self.master.abrir_tela_tipos()
         #messagebox.showinfo("Selecionado", f"Você selecionou a compra {id_compra[0]} - {id_compra[1]} - {id_compra[2]}")

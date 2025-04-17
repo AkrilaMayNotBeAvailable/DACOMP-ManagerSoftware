@@ -2,6 +2,7 @@ import customtkinter as ctk
 from compras import TelaCompras
 from produtos import TelaProdutos
 from caixa import TelaCaixa
+from tipos import TelaTipos
 
 class App(ctk.CTk):
     def __init__(self):
@@ -28,6 +29,11 @@ class App(ctk.CTk):
         if self.tela_atual:
             self.tela_atual.destroy()
         self.tela_atual = TelaCaixa(self)
+        
+    def abrir_tela_tipos(self):
+        if self.tela_atual:
+            self.tela_atual.destroy()
+        self.tela_atual = TelaTipos(self)
 
 if __name__ == "__main__":
     app = App()

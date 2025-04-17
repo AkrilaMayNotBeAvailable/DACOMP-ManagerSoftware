@@ -47,24 +47,21 @@ class TelaCaixa(ctk.CTkFrame):
         campos['frame_scroller'].grid(row=1, column=0, padx=(10, 20), pady=10, sticky="nswe")
 
         # Cria produtos disponíveis:
-        dados = self.load_database_products()
-        for i, produto in enumerate(dados):
+        dados = self.load_database_tipos()
+        for i, tipo in enumerate(dados):
             indice_coluna = i % 2
             indice_linha = i - indice_coluna
             campos[f'produto_{i}'] = widget_prototype_product(
-                campos['frame_scroller'], produto[4], produto[6], indice_linha, indice_coluna
+                campos['frame_scroller'], tipo[1], tipo[2], indice_linha, indice_coluna
             )
-
-        #campos['produto1'] = widget_prototype_product(campos['frame_scroller'], "Produto 1", "Produto 1", 0, 0)
-        #campos['produto2'] = widget_prototype_product(campos['frame_scroller'], "Produto 2", "Produto 2", 0, 6)
 
         return campos
 
-    def load_database_products(self):
+    def load_database_tipos(self):
         # Conecta ao banco de dados e busca os produtos disponíveis:
         conn = sqlite3.connect("sistema_compras.db")
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM produtos")
+        cursor.execute("SELECT * FROM tipos")
         produtos = cursor.fetchall()
         conn.close()
 

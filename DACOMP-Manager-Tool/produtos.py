@@ -59,20 +59,20 @@ class TelaProdutos(ctk.CTkFrame):
         self.frame_formulario = ctk.CTkFrame(self)
         self.frame_formulario.grid(row=0, column=0, padx=10, pady=10, sticky="nswe")
 
-        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 1, 0, 0)
-        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890123", 1, 1, 0)
+        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 1, 1, 0)
+        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890123", 1, 0, 0)
         self.validade_entry = criar_entradas(self.frame_formulario, "Validade (YYYY-MM-DD)", "Ex: 2025-12-31", 1, 2, 0)
         self.valor_unit_entry = criar_entradas(self.frame_formulario, "Valor Unitário", "Ex: 12.50", 1, 3, 0)
-        self.valor_venda_entry = criar_entradas(self.frame_formulario, "Valor de Venda", "Ex: 15.00", 1, 4, 0)
+        self.quantidade_entry = criar_entradas(self.frame_formulario, "Quantidade", "Ex: 10", 1, 4, 0)
 
         self.botao_salvar = ctk.CTkButton(self.frame_formulario, text="Salvar Produto", command=self.salvar_produto)
-        self.botao_salvar.grid(row=0, column=5)
+        self.botao_salvar.grid(row=0, column=6)
 
         self.nome_entry.grid(row=0, column=0, padx=5, pady=5)
         self.cod_barras_entry.grid(row=0, column=1, padx=5, pady=5)
         self.validade_entry.grid(row=0, column=2, padx=5, pady=5)
         self.valor_unit_entry.grid(row=0, column=3, padx=5, pady=5)
-        self.valor_venda_entry.grid(row=0, column=4, padx=5, pady=5)
+        self.quantidade_entry.grid(row=0, column=4, padx=5, pady=5)
         
     def recuperar_dados(self):
         conn = sqlite3.connect("sistema_compras.db")
@@ -94,24 +94,26 @@ class TelaProdutos(ctk.CTkFrame):
 
             id_produto = dado[0]
 
-            entry_nome = criar_entradas(self.frame_compras, "Produto", dado[4], row_base, 0)
-            entry_valor_unit = criar_entradas(self.frame_compras, "Valor Unitário", str(dado[5]), row_base, 2)
-            entry_valor_venda = criar_entradas(self.frame_compras, "Valor de Venda", str(dado[6]), row_base, 4)
-            entry_cod_barras = criar_entradas(self.frame_compras, "Código de Barras", dado[3], row_base, 6)
-            entry_validade = criar_entradas(self.frame_compras, "Validade", dado[2], row_base, 8)
+            entry_nome = criar_entradas(self.frame_compras, "Produto", dado[5], row_base, 0)
+            entry_valor_unit = criar_entradas(self.frame_compras, "Valor Unitário", str(dado[6]), row_base, 2)
+            entry_cod_barras = criar_entradas(self.frame_compras, "Código de Barras", dado[4], row_base, 6)
+            entry_validade = criar_entradas(self.frame_compras, "Validade", dado[3], row_base, 8)
+            entry_quantidade = criar_entradas(self.frame_compras, "Quantidade", str(dado[7]), row_base, 10)
+            entry_estoque = criar_entradas(self.frame_compras, "Estoque", str(dado[8]), row_base, 12)
 
             # Botão para remover produto
             botao_remover = ctk.CTkButton(self.frame_compras, text="Remover", command=lambda id_produto=id_produto: self.remover_produto(id_produto))
-            botao_remover.grid(row=row_base + 1, column=10, padx=10, pady=(0, 0), sticky="we")
+            botao_remover.grid(row=row_base + 1, column=14, padx=10, pady=(0,0), sticky="we")
 
             # Guarda os dados para atualização
             self.entries_produtos.append({
                 "id": id_produto,
                 "nome": entry_nome,
                 "valor_unit": entry_valor_unit,
-                "valor_venda": entry_valor_venda,
                 "cod_barras": entry_cod_barras,
-                "validade": entry_validade
+                "validade": entry_validade,
+                "quantidade": entry_quantidade,
+                "estoque": entry_estoque,
             })
     def gerar_codigo_barras_unico(self):
         conn = sqlite3.connect("sistema_compras.db")
@@ -129,7 +131,6 @@ class TelaProdutos(ctk.CTkFrame):
         cod_barras = self.cod_barras_entry.get() or self.gerar_codigo_barras_unico()
         nome = self.nome_entry.get()
         valor_unit = float(self.valor_unit_entry.get() or "0.00")
-        valor_venda = float(self.valor_venda_entry.get() or "0.00")
 
         dados = (
             self.id_compra,
@@ -137,15 +138,16 @@ class TelaProdutos(ctk.CTkFrame):
             cod_barras,
             nome,
             valor_unit,
-            valor_venda
+            int(self.quantidade_entry.get() or "0"),
+            int(self.quantidade_entry.get() or "0"),  # Estoque inicial igual à quantidade
         )
 
         try:
             conn = sqlite3.connect("sistema_compras.db")
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO produtos (id_compra, validade, cod_barras, nome, valor_unit, valor_venda)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO produtos (id_compra, validade, cod_barras, nome, valor_unit, quantidade, estoque)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, dados)
             conn.commit()
             conn.close()
@@ -164,15 +166,17 @@ class TelaProdutos(ctk.CTkFrame):
                 id_prod = item["id"]
                 nome = item["nome"].get()
                 valor_unit = float(item["valor_unit"].get())
-                valor_venda = float(item["valor_venda"].get())
+                # valor_venda = float(item["valor_venda"].get())
                 cod_barras = item["cod_barras"].get()
                 validade = item["validade"].get()
+                quantidade = int(item["quantidade"].get())
+                estoque = int(item["estoque"].get())
 
                 cursor.execute("""
                     UPDATE produtos
-                    SET nome = ?, valor_unit = ?, valor_venda = ?, cod_barras = ?, validade = ?
+                    SET nome = ?, valor_unit = ?, quantidade = ?, estoque = ?, cod_barras = ?, validade = ?
                     WHERE id = ?
-                """, (nome, valor_unit, valor_venda, cod_barras, validade, id_prod))
+                """, (nome, valor_unit, quantidade, estoque, cod_barras, validade, id_prod))
 
             conn.commit()
             conn.close()
