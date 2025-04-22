@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import sqlite3
-from database import conectar
+from database import produtos as db
 from datetime import date
 
 class TelaCompras(ctk.CTkFrame):
@@ -17,7 +17,7 @@ class TelaCompras(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)  # Formulário
         self.grid_columnconfigure(1, weight=0)  # Lista lateral (tamanho fixo)
-        conectar()
+        db.conectar()
 
         self.campos = self.criar_widgets()
 
@@ -120,7 +120,7 @@ class TelaCompras(ctk.CTkFrame):
 
     def selecionar_compra(self, id_compra):
         self.master.abrir_tela_produtos(id_compra)
-        messagebox.showinfo("Selecionado", f"Você selecionou a compra {id_compra[0]} - {id_compra[1]} - {id_compra[2]}")
+        #messagebox.showinfo("Selecionado", f"Você selecionou a compra {id_compra[0]} - {id_compra[1]} - {id_compra[2]}")
 
     def abrir_novo_caixa(self):
         self.master.abrir_tela_caixa()

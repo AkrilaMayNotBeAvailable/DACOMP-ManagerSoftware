@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import sqlite3
-from database import conectar
+from database import produtos as db
 from customWidgets import widget_prototype_product
 
 class TelaCaixa(ctk.CTkFrame):

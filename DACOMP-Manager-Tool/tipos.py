@@ -1,17 +1,6 @@
 import customtkinter as ctk
 import sqlite3
-
-def criar_entradas(frame, label_txt, placeholder, base_row, col, mode=1):
-    label = ctk.CTkLabel(frame, text=label_txt)
-    label.grid(row=base_row, column=col, sticky="w", padx=5)
-    entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
-    if mode == 1:
-        entry.grid(row=base_row + 1, column=col, padx=0, pady=(0, 10), columnspan=1, sticky="we")
-    else:
-        entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
-        entry.grid(row=0, column=col, padx=5, pady=5, sticky="we")
-    return entry
-
+from customWidgets import criar_entradas
 
 class TelaTipos(ctk.CTkFrame):
     def __init__(self, master):
@@ -20,12 +9,23 @@ class TelaTipos(ctk.CTkFrame):
         
         # Configuração do layout
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(3, weight=1)
+        self.rowconfigure(4, weight=1)
+        self.rowconfigure(5, weight=1)
+
         
-        # Título da tela
-        titulo = ctk.CTkLabel(self, text="Tipos de Produtos", font=("Arial", 16, "bold"))
-        titulo.grid(row=0, column=0, sticky="w")
-        
+        self.frame_title = ctk.CTkFrame(self)
+        self.frame_title.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.frame_title.grid_rowconfigure(0, weight=1)
+        self.frame_title.grid_columnconfigure(0, weight=1)
+        self.titulo = criar_entradas(self.frame_title, "Tipos de Produtos", "Tipos de Produtos", 0, 0, widget='title')
+
+        # Cria o scrollable frame uma vez
+        self.frame_tipos = ctk.CTkScrollableFrame(self)
+        self.frame_tipos.grid(row=3, column=0, columnspan=4, rowspan=3, sticky="nsew")
+        self.frame_tipos.grid_rowconfigure(3, weight=1)
+        self.frame_tipos.grid_columnconfigure(0, weight=1)
+
         # Criar entradas para adicionar tipos de produtos
         self.entry_tipo_produto = criar_entradas(
             frame=self,
@@ -33,6 +33,7 @@ class TelaTipos(ctk.CTkFrame):
             placeholder="Digite o tipo de produto",
             base_row=1,
             col=0,
+            widget='entry'
         )
         self.entry_tipo_valor = criar_entradas(
             frame=self,
@@ -40,6 +41,7 @@ class TelaTipos(ctk.CTkFrame):
             placeholder="Digite o valor de produto",
             base_row=1,
             col=1,
+            widget='entry'
         )
         
         # Botão para salvar o tipo de produto
@@ -47,54 +49,64 @@ class TelaTipos(ctk.CTkFrame):
         btn_salvar.grid(row=2, column=2, padx=10, pady=10, sticky="e")
 
         btn_voltar = ctk.CTkButton(self, text="Voltar para Interface Base", command=self.voltar)
-        btn_voltar.grid(row=3, column=2, padx=10, pady=10, sticky="e")
+        btn_voltar.grid(row=2, column=3, padx=10, pady=10, sticky="e")
         
         # Lista para exibir os tipos de produtos cadastrados
-        self.lista_tipos = ctk.CTkTextbox(self, height=440)
-        self.lista_tipos.grid(row=4, column=0, padx=10, pady=10, sticky="nsew")
+        #self.lista_tipos = ctk.CTkTextbox(self, height=440)
+        #self.lista_tipos.grid(row=4, column=0, padx=10, pady=10, sticky="nsew")
         self.atualizar_tipos()
         
     def atualizar_tipos(self):
         try:
             # Conecta ao banco de dados
-            conn = sqlite3.connect("sistema_compras.db")
-            cursor = conn.cursor()
-            
-            # Consulta os tipos de produtos no banco de dados
-            cursor.execute("SELECT tipo, valor FROM tipos")
-            tipos = cursor.fetchall()
-            conn.close()
-            
-            # Limpa a lista exibida
-            self.lista_tipos.delete("1.0", "end")
-            
-            # Adiciona os tipos de produtos na lista exibida
-            for tipo, valor in tipos:
-                self.lista_tipos.insert("end", f"{tipo}, {valor}\n")
+            with sqlite3.connect("sistema_compras.db") as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, tipo, valor FROM tipos")
+                tipos = cursor.fetchall()
+
+            # Lista para guardar os widgets, se quiser usar depois (ex: para salvar alterações)
+            self.entries_tipos = []
+
+            #self.frame_tipos = ctk.CTkScrollableFrame(self)
+            #self.frame_tipos.grid(row=3, column=0, padx=10, pady=10, sticky="nswe")
+            #self.frame_tipos.grid_rowconfigure(3, weight=1)
+            #self.frame_tipos.grid_columnconfigure(3, weight=1)
+
+            # Limpa os widgets antigos da lista
+            for widget in self.frame_tipos.winfo_children():
+                widget.destroy()
+
+            # Cria campos editáveis para cada tipo
+            for i, (id_tipo, tipo_nome, valor) in enumerate(tipos):
+                row_base = i * 2
+
+                entrada_nome = criar_entradas(self.frame_tipos, "Tipo", tipo_nome, row_base, 0, widget='entry_autofill')
+                entrada_valor = criar_entradas(self.frame_tipos, "Valor", str(valor), row_base, 2, widget='entry_autofill')
+
+                # Guarda os widgets e o ID do tipo para futura atualização
+                self.entries_tipos.append({
+                    "id": id_tipo,
+                    "nome": entrada_nome["entry"],
+                    "valor": entrada_valor["entry"]
+                })
+
         except sqlite3.Error as e:
             print(f"Erro ao carregar tipos de produtos: {e}")
-        
+
     def salvar_tipo_produto(self):
         # Obtém o texto do campo de entrada
-        tipo_produto = self.entry_tipo_produto.get()
-        tipo_valor = self.entry_tipo_valor.get()
+        tipo_produto = self.entry_tipo_produto['entry'].get()
+        tipo_valor = self.entry_tipo_valor['entry'].get()
         
         if tipo_produto.strip():
             if not tipo_valor.strip():
                 tipo_valor = 0.0
             try:
-                # Conecta ao banco de dados
-                conn = sqlite3.connect("sistema_compras.db")
-                cursor = conn.cursor()
-                
-                # Insere o tipo de produto no banco de dados
-                cursor.execute("INSERT INTO tipos (tipo, valor) VALUES (?, ?)", (tipo_produto, tipo_valor))
-                conn.commit()
-                conn.close()
-                
-                # Adiciona o tipo de produto na lista exibida
-                self.lista_tipos.insert("end", f"{tipo_produto}, {tipo_valor}\n")
-                self.entry_tipo_produto.delete(0, "end")
+                with sqlite3.connect("sistema_compras.db") as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("INSERT INTO tipos (tipo, valor) VALUES (?, ?)", (tipo_produto, tipo_valor))
+                    conn.commit()
+                self.atualizar_tipos()
             except sqlite3.IntegrityError:
                 print("O tipo de produto já existe no banco de dados.")
         else:
