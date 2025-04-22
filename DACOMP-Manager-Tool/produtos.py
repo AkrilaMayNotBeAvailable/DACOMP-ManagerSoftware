@@ -21,7 +21,7 @@ def criar_entradas(frame, label_txt, placeholder, base_row, col, mode=1):
     entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
     if mode == 1:
         entry.insert(0, placeholder)
-        entry.grid(row=base_row + 1, column=col, padx=0, pady=(0, 10), columnspan=2, sticky="we")
+        entry.grid(row=base_row + 1, column=col, padx=0, pady=(0, 0), columnspan=2, sticky="we")
     else:
         entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
         entry.grid(row=0, column=col, padx=5, pady=5, sticky="we")
@@ -59,11 +59,20 @@ class TelaProdutos(ctk.CTkFrame):
         self.frame_formulario = ctk.CTkFrame(self)
         self.frame_formulario.grid(row=0, column=0, padx=10, pady=10, sticky="nswe")
 
-        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 1, 1, 0)
-        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890123", 1, 0, 0)
+        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 1, 0, 0)
+        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890123", 1, 1, 0)
         self.validade_entry = criar_entradas(self.frame_formulario, "Validade (YYYY-MM-DD)", "Ex: 2025-12-31", 1, 2, 0)
         self.valor_unit_entry = criar_entradas(self.frame_formulario, "Valor Unitário", "Ex: 12.50", 1, 3, 0)
         self.quantidade_entry = criar_entradas(self.frame_formulario, "Quantidade", "Ex: 10", 1, 4, 0)
+        
+        # Combobox de Tipo de Produto
+        self.label_tipo = ctk.CTkLabel(self.frame_formulario, text="Tipo")
+        self.label_tipo.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+        self.combobox_tipo = ctk.CTkComboBox(self.frame_formulario, values=[])
+        self.combobox_tipo.grid(row=0, column=5, padx=5, pady=5)
+
+        self.carregar_tipos()  # Chama o método abaixo para popular a comb
 
         self.botao_salvar = ctk.CTkButton(self.frame_formulario, text="Salvar Produto", command=self.salvar_produto)
         self.botao_salvar.grid(row=0, column=6)
@@ -83,6 +92,13 @@ class TelaProdutos(ctk.CTkFrame):
         return dados
     
     def atualizar_lista_compras(self):
+        conn = sqlite3.connect("sistema_compras.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, tipo FROM tipos")
+        tipos_disponiveis = cursor.fetchall()  # Lista de tuplas (id, tipo)
+        conn.close()
+
+
         self.entries_produtos = []  # ← Adicionado para armazenar os dados editáveis
         # Limpa os botões antigos
         for widget in self.frame_compras.winfo_children():
@@ -91,6 +107,16 @@ class TelaProdutos(ctk.CTkFrame):
         dados = self.recuperar_dados()
         for i, dado in enumerate(dados):
             row_base = i * 2  # Espaço para label e entry
+
+            id_tipo = dado[2]  # ID do tipo do produto
+            tipo_nome = next((t[1] for t in tipos_disponiveis if t[0] == id_tipo), "Desconhecido")
+
+            label_tipo = ctk.CTkLabel(self.frame_compras, text="Tipo")
+            label_tipo.grid(row=row_base, column=14)
+
+            combobox_tipo = ctk.CTkComboBox(self.frame_compras, values=[t[1] for t in tipos_disponiveis])
+            combobox_tipo.set(tipo_nome)
+            combobox_tipo.grid(row=row_base + 1, column=14)
 
             id_produto = dado[0]
 
@@ -103,11 +129,12 @@ class TelaProdutos(ctk.CTkFrame):
 
             # Botão para remover produto
             botao_remover = ctk.CTkButton(self.frame_compras, text="Remover", command=lambda id_produto=id_produto: self.remover_produto(id_produto))
-            botao_remover.grid(row=row_base + 1, column=14, padx=10, pady=(0,0), sticky="we")
+            botao_remover.grid(row=row_base + 1, column=16, padx=10, pady=(0,0), sticky="we")
 
             # Guarda os dados para atualização
             self.entries_produtos.append({
                 "id": id_produto,
+                "tipo": combobox_tipo,
                 "nome": entry_nome,
                 "valor_unit": entry_valor_unit,
                 "cod_barras": entry_cod_barras,
@@ -125,6 +152,17 @@ class TelaProdutos(ctk.CTkFrame):
                 conn.close()
                 return codigo
 
+    def carregar_tipos(self):
+        conn = sqlite3.connect("sistema_compras.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT tipo FROM tipos ORDER BY tipo")
+        tipos = [row[0] for row in cursor.fetchall()]
+        conn.close()
+
+        self.combobox_tipo.configure(values=tipos)
+        if tipos:
+            self.combobox_tipo.set(tipos[0])  # valor padrão
+
     def salvar_produto(self):
         # Coloca valores padrão para itens não preenchidos
         validade = self.validade_entry.get() or "2023-01-01"
@@ -132,23 +170,39 @@ class TelaProdutos(ctk.CTkFrame):
         nome = self.nome_entry.get()
         valor_unit = float(self.valor_unit_entry.get() or "0.00")
 
+        tipo_nome = self.combobox_tipo.get()
+
+        # Buscar o id do tipo
+        conn = sqlite3.connect("sistema_compras.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM tipos WHERE tipo = ?", (tipo_nome,))
+        tipo_result = cursor.fetchone()
+        if not tipo_result:
+            messagebox.showerror("Erro", "Tipo de produto inválido.")
+            return
+        id_tipo = tipo_result[0]
+
+
         dados = (
             self.id_compra,
+            id_tipo,
             validade,
             cod_barras,
             nome,
             valor_unit,
             int(self.quantidade_entry.get() or "0"),
-            int(self.quantidade_entry.get() or "0"),  # Estoque inicial igual à quantidade
+            int(self.quantidade_entry.get() or "0")
         )
+
 
         try:
             conn = sqlite3.connect("sistema_compras.db")
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO produtos (id_compra, validade, cod_barras, nome, valor_unit, quantidade, estoque)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO produtos (id_compra, id_tipo, validade, cod_barras, nome, valor_unit, quantidade, estoque)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, dados)
+
             conn.commit()
             conn.close()
             messagebox.showinfo("Sucesso", "Produto salvo com sucesso.")
@@ -166,17 +220,26 @@ class TelaProdutos(ctk.CTkFrame):
                 id_prod = item["id"]
                 nome = item["nome"].get()
                 valor_unit = float(item["valor_unit"].get())
-                # valor_venda = float(item["valor_venda"].get())
                 cod_barras = item["cod_barras"].get()
                 validade = item["validade"].get()
                 quantidade = int(item["quantidade"].get())
                 estoque = int(item["estoque"].get())
 
+                tipo_nome = item["tipo"].get()
+
+                cursor.execute("SELECT id FROM tipos WHERE tipo = ?", (tipo_nome,))
+                tipo_result = cursor.fetchone()
+                if not tipo_result:
+                    messagebox.showerror("Erro", f"Tipo '{tipo_nome}' não encontrado.")
+                    conn.close()
+                    return
+                id_tipo = tipo_result[0]
+
                 cursor.execute("""
                     UPDATE produtos
-                    SET nome = ?, valor_unit = ?, quantidade = ?, estoque = ?, cod_barras = ?, validade = ?
+                    SET nome = ?, valor_unit = ?, quantidade = ?, estoque = ?, cod_barras = ?, validade = ?, id_tipo = ?
                     WHERE id = ?
-                """, (nome, valor_unit, quantidade, estoque, cod_barras, validade, id_prod))
+                """, (nome, valor_unit, quantidade, estoque, cod_barras, validade, id_tipo, id_prod))
 
             conn.commit()
             conn.close()
@@ -184,6 +247,7 @@ class TelaProdutos(ctk.CTkFrame):
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao atualizar produtos: {e}")
+
         
     def remover_produto(self, id_produto):
         try:

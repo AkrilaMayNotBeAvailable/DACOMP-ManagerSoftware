@@ -43,7 +43,7 @@ class TelaCaixa(ctk.CTkFrame):
     def widgets_available_products(self):
         campos = {}
 
-        campos['frame_scroller'] = ctk.CTkScrollableFrame(self, width=300, label_text="Produtos Disponíveis")
+        campos['frame_scroller'] = ctk.CTkScrollableFrame(self, width=400, label_text="Produtos Disponíveis")
         campos['frame_scroller'].grid(row=1, column=0, padx=(10, 20), pady=10, sticky="nswe")
 
         # Cria produtos disponíveis:
