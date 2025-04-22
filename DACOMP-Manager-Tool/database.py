@@ -38,13 +38,17 @@ def conectar():
             valor REAL
         )""")
 
+
+    # Tipo Barrinha de Cereal, 2.50
+    # Tipo Coca-Cola, 4.00
+    # Tipo Trento, 2.50 (...)
     cursor.execute("""
         INSERT OR IGNORE INTO tipos (tipo, valor) VALUES
-        ('Bebidas', 0.00),
-        ('Alimentos', 0.00),
-        ('Limpeza', 0.00),
-        ('Higiene', 0.00),
-        ('Outros', 0.00)
+        ('Barra de Cereal Ritter', 2.50),
+        ('Coca-Cola', 4.00),
+        ('Trento', 2.50),
+        ('Cápsula de Café', 2.50),
+        ('Monster', 10.00)
     """)
     
     cursor.execute("""

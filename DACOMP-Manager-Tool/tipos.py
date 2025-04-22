@@ -45,6 +45,9 @@ class TelaTipos(ctk.CTkFrame):
         # Botão para salvar o tipo de produto
         btn_salvar = ctk.CTkButton(self, text="Salvar Tipo de Produto", command=self.salvar_tipo_produto)
         btn_salvar.grid(row=2, column=2, padx=10, pady=10, sticky="e")
+
+        btn_voltar = ctk.CTkButton(self, text="Voltar para Interface Base", command=self.voltar)
+        btn_voltar.grid(row=3, column=2, padx=10, pady=10, sticky="e")
         
         # Lista para exibir os tipos de produtos cadastrados
         self.lista_tipos = ctk.CTkTextbox(self, height=440)
@@ -77,6 +80,8 @@ class TelaTipos(ctk.CTkFrame):
         tipo_valor = self.entry_tipo_valor.get()
         
         if tipo_produto.strip():
+            if not tipo_valor.strip():
+                tipo_valor = 0.0
             try:
                 # Conecta ao banco de dados
                 conn = sqlite3.connect("sistema_compras.db")
@@ -94,3 +99,7 @@ class TelaTipos(ctk.CTkFrame):
                 print("O tipo de produto já existe no banco de dados.")
         else:
             print("O campo de tipo de produto está vazio.")
+
+    def voltar(self):
+        self.destroy()
+        self.master.abrir_tela_compras()
