@@ -13,7 +13,6 @@ def change_entry(entry, delta):
     entry.insert(0, str(new_value))
 #------------------------------------------------
 
-
 # Criação do spinner:
 #------------------------------------------------
 def create_spinner(master, row=0, column=0, columnspan=1, initial_value="0"):
@@ -118,3 +117,43 @@ def widget_scrollable_form(frame, row=0, column=0, columnspan=1):
 
     return scrollable_frame
 #------------------------------------------------
+
+''' Dado um Widget, cria label e widget de entrada. Utilzando grids para posicionar os widgets.
+        > label_txt: Texto do label.
+        > placeholder: Placeholder do widget de entrada.
+        > base_row: Linha base para o grid.
+        > col: Coluna base para o grid.
+        > widget: Tipo de widget a ser criado. Pode ser 'entry' ou 'combobox'.
+    Retorna um dicionário com o label e o widget criado. 
+        >> Chaves: 'label', 'entry' ou 'combobox'.
+'''
+def criar_entradas(frame, label_txt, placeholder, base_row, col, widget):
+    custom_widget = {}
+    
+
+    if widget == 'title': # Título
+        label = ctk.CTkLabel(frame, text=label_txt, font=("Arial", 16, "bold"))
+        label.grid(row=base_row, column=col, sticky="w", padx=5)
+        custom_widget['title'] = label
+    else:
+        label = ctk.CTkLabel(frame, text=label_txt)
+        label.grid(row=base_row, column=col, sticky="w", padx=5)
+        custom_widget['label'] = label
+
+    if widget == 'entry': # Entrada de texto
+        entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
+        entry.grid(row=base_row + 1, column=col, padx=5, pady=(0, 0), columnspan=1, sticky="we")
+        custom_widget['entry'] = entry
+    
+    elif widget == 'entry_autofill': # Entrada de texto com autocompletar
+        entry = ctk.CTkEntry(frame, placeholder_text=placeholder)
+        entry.insert(0, placeholder)
+        entry.grid(row=base_row + 1, column=col, padx=5, pady=(0, 0), columnspan=1, sticky="we")
+        custom_widget['entry'] = entry
+    
+    elif widget == 'combobox': # Entrada de Combobox
+        entry = ctk.CTkComboBox(frame, values=placeholder)
+        entry.grid(row=base_row + 1, column=col, padx=5, pady=(0, 0), columnspan=1, sticky="we")
+        custom_widget['combobox'] = entry
+
+    return custom_widget
