@@ -7,24 +7,27 @@ Layout de Caixa: (fiz no paint mesmo)
 Diagrama de relações - Database de produtos local:
 https://drive.google.com/file/d/1Pk-Ew_HcH98pEhAjWnRxKb5jGtqEyC76/view?usp=drive_link
 
-Desenvolvedor: @AkrilaMayNotBeAvailable
-Desenvolvedor: @Wesferr - Wesley Ferreira
+# Desenvolvedores:
 
-TODO:
-> subtração do estoque no primeiro da pilha daquele tipo (PRIORIDADE ALTA)
-> impressao como caso combo. (PRIORIDADE ALTA)
-> implementar funcionalidade dos botões "Gerar estatisticas do dia" e "Fechar Caixa" (PRIORIDADE ALTA)
-> implementar tabela de DB do caixa diário. (PRIORIDADE ALTA)
-> implementar messagebox quando ocorrerem erros por parte do usuário (PRIORIDADE ALTA)
----
-> Tabela de perdas: quando vendermos uma barrinha e não tiver nehuma disponivel na tabela estoque(produtos) marcar +1 na tabela de perdas naquele tipo especifico. (PRIORIDADE MÉDIA)
-> implementar caso em que o CAFÉ pode ser vendido em METADE. (PRIORIDADE MÉDIA)
----
-> Melhorias de interface (PRIORIDADE BAIXA)
-> Otimização de widgets (PRIORIDADE BAIXA)
-> Documentação (PRIORIDADE BAIXA)
-> Tutorial para usuários (PRIORIDADE BAIXA)
-> Diagramas de Relação da Database (PRIORIDADE BAIXA)
-> Layout de Design de interface do software (PRIORIDADE BAIXA) <- Jeito bonitinho de dizer como vão ser as telas do negócio.
+@**AkrilaMayNotBeAvailable**\
+@**Wesferr** - Wesley Ferreira
 
-> Fix de Bugs (PRIORIDADE VARIÁVEL)
+# TODO:
+
+ Subtração do estoque no primeiro da pilha daquele tipo (PRIORIDADE ALTA) \
+ Impressao como caso combo. (PRIORIDADE ALTA) \
+ Implementar funcionalidade dos botões "Gerar estatisticas do dia" e "Fechar Caixa" (PRIORIDADE ALTA) \
+ Implementar tabela de DB do caixa diário. (PRIORIDADE ALTA) \
+ Implementar messagebox quando ocorrerem erros por parte do usuário (PRIORIDADE ALTA)
+
+Tabela de perdas: quando vendermos uma barrinha e não tiver nehuma disponivel na tabela estoque(produtos) marcar +1 na tabela de perdas naquele tipo especifico. (PRIORIDADE MÉDIA)\
+Implementar caso em que o CAFÉ pode ser vendido em METADE. (PRIORIDADE MÉDIA)
+
+Melhorias de interface (PRIORIDADE BAIXA)\
+Otimização de widgets (PRIORIDADE BAIXA)\
+Documentação (PRIORIDADE BAIXA)\
+Tutorial para usuários (PRIORIDADE BAIXA)\
+Diagramas de Relação da Database (PRIORIDADE BAIXA)\
+Layout de Design de interface do software (PRIORIDADE BAIXA) <- Jeito bonitinho de dizer como vão ser as telas do negócio.
+
+Arrumar bugs (PRIORIDADE VARIÁVEL)
