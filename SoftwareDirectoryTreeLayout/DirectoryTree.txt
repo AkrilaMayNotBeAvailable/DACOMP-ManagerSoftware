@@ -1,0 +1,25 @@
+DACOMP-BusinessManager/
+│
+├── main.py                  # Programa principal
+|
+│── SoftwareDirectoryTreeLayout/
+│   └── tree.py             # <-- Você está aqui, isso é a estrutura do projeto
+│
+├── UI/                     # Interface gráfica
+│   └── tela_produtos.py    # Interface de produtos
+│   └── tela_tipos.py       # Interface de tipos de produtos
+│   └── tela_compras.py     # Interface de compras
+│   └── tela_caixa.py       # Interface de caixa
+│
+├── database/               # Camada de dados
+│   ├── setup_db.py         # Funções de configuração do banco de dados / Inicialização / Conexão
+│   ├── compras.py          # DB - CRUD de compras
+│   ├── produtos.py         # DB - CRUD de produtos
+│   └── tipos.py            # DB - CRUD de tipos de produtos
+│
+├── utils/
+│   └── customtkinter.py    # CustomTkinter - biblioteca de widgets customizados (Criados por AkrilaMayNotBeAvailable)
+|
+├── Requirements.txt        # Dependências do projeto
+|
+|
