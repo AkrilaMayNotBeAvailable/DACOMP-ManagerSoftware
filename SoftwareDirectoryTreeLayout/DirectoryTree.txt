@@ -10,6 +10,7 @@ DACOMP-BusinessManager/
 │   └── tela_tipos.py       # Interface de tipos de produtos
 │   └── tela_compras.py     # Interface de compras
 │   └── tela_caixa.py       # Interface de caixa
+│   └── tela_estatisticas.py # Interface de análise de dados
 │
 ├── database/               # Camada de dados
 │   ├── setup_db.py         # Funções de configuração do banco de dados / Inicialização / Conexão
@@ -19,7 +20,6 @@ DACOMP-BusinessManager/
 │
 ├── utils/
 │   └── customtkinter.py    # CustomTkinter - biblioteca de widgets customizados (Criados por AkrilaMayNotBeAvailable)
+|   └── sqliteAux.py        # Conversão de dados para inserção da database
 |
 ├── Requirements.txt        # Dependências do projeto
-|
-|

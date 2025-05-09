@@ -86,6 +86,13 @@ class TelaTipos(ctk.CTkFrame):
         except Exception as e:
             print(f"Erro ao remover tipo: {e}")
 
+    def atualizar_tipo(self, id_tipo, tipo_nome, tipo_valor):
+        try:
+            db.atualizar_tipo_produto(id_tipo, tipo_nome, tipo_valor)
+            self.atualizar_tipos()
+        except sqlite3.Error as e:
+            print(f"Erro ao atualizar tipo: {e}")
+
     def atualizar_tipos(self):
         try:
             tipos = db.recuperar_tipos()
@@ -102,8 +109,11 @@ class TelaTipos(ctk.CTkFrame):
                 entrada_nome = criar_entradas(self.frame_tipos, "Tipo", tipo_nome, row_base, 0, widget='entry_autofill')
                 entrada_valor = criar_entradas(self.frame_tipos, "Valor", str(valor), row_base, 2, widget='entry_autofill')
 
-                botao_remover = ctk.CTkButton(self.frame_tipos, text="Remover", command=lambda id_tipo=id_tipo: self.remover_tipo(id_tipo))
-                botao_remover.grid(row=row_base+1, column=3)
+                botao_atualizar = ctk.CTkButton(self.frame_tipos, text="Atualizar", command=lambda id_tipo=id_tipo, nome=entrada_nome["entry"], valor=entrada_valor["entry"]: self.atualizar_tipo(id_tipo, nome.get(), valor.get()))
+                botao_atualizar.grid(row=row_base+1, column=3)
+
+                botao_remover = ctk.CTkButton(self.frame_tipos, text="Remover", command=lambda id_tipo=id_tipo: self.remover_tipo(id_tipo), fg_color="#960513", hover_color="#5e030c")
+                botao_remover.grid(row=row_base+1, column=4, padx=20)
 
                 # Guarda os widgets e o ID do tipo para futura atualização
                 self.entries_tipos.append({

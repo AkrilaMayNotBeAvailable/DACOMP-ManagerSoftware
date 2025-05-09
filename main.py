@@ -4,10 +4,10 @@ inicializar_banco()
 import customtkinter as ctk
 
 from UI.tela_caixa import TelaCaixa
-
 from UI.tela_produto import TelaProdutos
 from UI.tela_tipos import TelaTipos
 from UI.tela_compras import TelaCompras
+from UI.tela_estatisticas import TelaEstatisticas
 
 class App(ctk.CTk):
     def __init__(self):
@@ -39,6 +39,11 @@ class App(ctk.CTk):
         if self.tela_atual:
             self.tela_atual.destroy()
         self.tela_atual = TelaTipos(self)
+
+    def abrir_tela_estatisticas(self):
+        if self.tela_atual:
+            self.tela_atual.destroy()
+        self.tela_atual = TelaEstatisticas(self, "Hoje")
 
 if __name__ == "__main__":
     app = App()
