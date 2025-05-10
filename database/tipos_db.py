@@ -15,6 +15,13 @@ def inserir_tipo_produto(tipo_produto, tipo_valor):
         conn.commit()
         print(f"Tipo de produto '{tipo_produto}' inserido com sucesso.")
 
+def atualizar_tipo_produto(id_tipo, tipo_nome, tipo_valor):
+    with conectar() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE tipos SET tipo = ?, valor = ? WHERE id = ?", (tipo_nome, tipo_valor, id_tipo))
+        conn.commit()
+        print(f"Tipo de produto com ID {id_tipo} atualizado para '{tipo_nome}' com valor {tipo_valor}.")
+
 def recuperar_tipos():
     with conectar() as conn:
         cursor = conn.cursor()

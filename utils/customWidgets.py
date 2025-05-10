@@ -1,50 +1,40 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-# Usado para modificar os valores dos spinners:
-#------------------------------------------------
-def change_entry(entry, delta):
-    try:
-        value = int(entry.get())
-    except ValueError:
-        value = 0
-    new_value = max(value + delta, 0)
-    entry.delete(0, "end")
-    entry.insert(0, str(new_value))
-#------------------------------------------------
+from database import caixa_db as db
 
 # Criação do spinner:
 #------------------------------------------------
-def create_spinner(master, row=0, column=0, columnspan=1, initial_value="0"):
+def create_spinner(master, row=0, column=0, columnspan=1, initial_value="0", on_change=None, on_revert=None):
     def change_entry(entry, delta):
         try:
             value = int(entry.get())
         except ValueError:
             value = 0
-        new_value = max(value + delta, 0)
+        new_value = value + delta
         entry.delete(0, "end")
         entry.insert(0, str(new_value))
+        
+        if delta > 0 and on_change:
+            on_change(new_value, delta)
+        elif delta < 0 and on_revert:
+            print(new_value)
+            if new_value < 0:
+                messagebox.showwarning("Atenção", "Valor não pode ser menor que zero.")
+                new_value = 0
+                entry.delete(0, "end")
+                entry.insert(0, str(new_value))
+            else:
+                on_revert(new_value, delta)
 
-    # Container do spinner (frame interno)
     spinner_frame = ctk.CTkFrame(master, fg_color="transparent")
     spinner_frame.grid(row=row, column=column, columnspan=columnspan, padx=5, pady=5, sticky="w")
 
-    # Campo de entrada
-    entry = ctk.CTkEntry(spinner_frame, width=60, justify="center")
+    entry = ctk.CTkEntry(spinner_frame, width=60, justify="center" )
     entry.insert(0, initial_value)
-    
-    # Botão "-"
-    btn_decrement = ctk.CTkButton(
-        spinner_frame, text="-", width=30, height=28,
-        command=lambda: change_entry(entry, -1)
-    )
-    
 
-    # Botão "+"
-    btn_increment = ctk.CTkButton(
-        spinner_frame, text="+", width=30, height=28,
-        command=lambda: change_entry(entry, 1)
-    )
+    btn_decrement = ctk.CTkButton(spinner_frame, text="-", width=30, height=28, command=lambda: change_entry(entry, -1), fg_color="#6f0c0c", hover_color="#5f0c0c")
+    btn_increment = ctk.CTkButton(spinner_frame, text="+", width=30, height=28, command=lambda: change_entry(entry, 1), fg_color="#0c6f23", hover_color="#0c5f23")
 
     btn_decrement.pack(side="left", padx=2)
     entry.pack(side="left", padx=2)
@@ -61,47 +51,55 @@ def create_spinner(master, row=0, column=0, columnspan=1, initial_value="0"):
 
 # Auxiliar para criar entradas de texto:
 #------------------------------------------------
-def widget_prototype_product(frame, label_txt, placeholder, base_row, col):
+def widget_prototype_product(frame, label_txt, tipo_id, preco, base_row, col):
+    def on_pix_change(new_value, delta):
+        db.registrar_venda(tipo_id, 1, "pix")
+
+    def on_pix_revert(new_value, delta):
+        db.reverter_venda(tipo_id, 1, "pix")
+
+    def on_money_change(new_value, delta):
+        db.registrar_venda(tipo_id, 1, "dinheiro")
+
+    def on_money_revert(new_value, delta):
+        db.reverter_venda(tipo_id, 1, "dinheiro")
+
     product = {}
-
     product['frame'] = ctk.CTkFrame(frame)
-    product['frame'].grid(row=base_row, column=col, padx=5, pady=5, sticky="we")
+    product['frame'].grid(row=base_row, column=col, padx=10, pady=10, sticky="nswe")
     product['frame'].grid_rowconfigure(0, weight=1)
+    product['frame'].grid_rowconfigure(1, weight=0)  # Linha do dinheiro e pix
+    product['frame'].grid_columnconfigure(0, weight=1)  # Expande o nome
+    
+    product['subframe'] = ctk.CTkFrame(product['frame']) # A porcaria do frame que tem que ter o columnspan
+    product['subframe'].grid(row=0, column=0, columnspan=8, padx=5, pady=5, sticky="we")
 
-    product['name'] = ctk.CTkLabel(product['frame'], text=label_txt)
-    product['name'].grid(row=0, column=0, sticky="we", padx=5)
-    product['price'] = ctk.CTkLabel(product['frame'], text=f'R$ {float(placeholder):.2f}')
-    product['price'].grid(row=0, column=5, sticky="we", padx=5)
+    # Configura o layout do subframe com 3 colunas
+    product['subframe'].grid_columnconfigure(0, weight=0)  # Label nome
+    product['subframe'].grid_columnconfigure(1, weight=1)  # Espaço expansível
+    product['subframe'].grid_columnconfigure(2, weight=0)  # Label preço
 
+    # Nome à esquerda
+    product['name'] = ctk.CTkLabel(product['subframe'], text=label_txt, font=("Arial", 16, "bold"))
+    product['name'].grid(row=0, column=0, sticky="w", padx=(10, 5))
 
-    # Cantinho do DINHEIRO:
-    #------------------------------------------------
+    # Preço à direita
+    product['price'] = ctk.CTkLabel(product['subframe'], text=f'R$ {float(preco):.2f}', font=("Arial", 16, "bold"))
+    product['price'].grid(row=0, column=2, sticky="e", padx=(5, 10))
+    # Dinheiro
     product['money'] = ctk.CTkLabel(product['frame'], text="DINHEIRO:")
     product['money'].grid(row=1, column=0, sticky="we", padx=5)
-    
-    spinner_widgets_money = create_spinner(product['frame'], row=1, column=1, columnspan=3)
-    product['money_control'] = spinner_widgets_money["frame"]
+    spinner_widgets_money = create_spinner(product['frame'], row=1, column=1, columnspan=3, on_change=on_money_change, on_revert=on_money_revert)
     product['money_entry'] = spinner_widgets_money["entry"]
-    product['money_increment'] = spinner_widgets_money["increment_button"]
-    product['money_decrement'] = spinner_widgets_money["decrement_button"]
-    #------------------------------------------------
 
-    # Cantinho do CARTÃO:
-    #------------------------------------------------
-    # TODO: Implementar o cartão
-    #------------------------------------------------
-
-    # Cantinho do PIX:
-    #------------------------------------------------
+    # Pix
     product['pix'] = ctk.CTkLabel(product['frame'], text="PIX: ")
     product['pix'].grid(row=1, column=4, sticky="w", padx=5)
+    spinner_widgets_pix = create_spinner(product['frame'], row=1, column=5, columnspan=3, on_change=on_pix_change, on_revert=on_pix_revert)
+    product['pix_entry'] = spinner_widgets_pix["entry"]
 
-    spinner_widgets = create_spinner(product['frame'], row=1, column=5, columnspan=3)
-    product['pix_control'] = spinner_widgets["frame"]
-    product['pix_entry'] = spinner_widgets["entry"]
-    product['pix_increment'] = spinner_widgets["increment_button"]
-    product['pix_decrement'] = spinner_widgets["decrement_button"]
-    #------------------------------------------------
+    product['tipo_id'] = tipo_id
+
     return product
 #------------------------------------------------
 

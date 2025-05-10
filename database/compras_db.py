@@ -24,7 +24,7 @@ def carregar_compras():
     try:
         with conectar() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT local, data_encomenda, chave_nota FROM compras ORDER BY id DESC")
+            cursor.execute("SELECT local, data_encomenda, chave_nota, valor_total FROM compras ORDER BY id DESC")
             compras = cursor.fetchall()
             return compras
     except sqlite3.Error as e:

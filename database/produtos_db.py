@@ -35,10 +35,19 @@ def inserir_produto(dados):
         """, dados)
         conn.commit()
 
-def recuperar_produtos_por_compra(id_compra):
+def recuperar_produtos_por_compra(id_compra, ordenacao=0):
     with conectar() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM produtos WHERE id_compra = ?", (id_compra,))
+        query = " SELECT * FROM produtos WHERE id_compra = ?"
+        if ordenacao == 1:
+            query += " ORDER BY nome ASC"
+        elif ordenacao == 2:
+            query += " ORDER BY valor_unit ASC"
+        elif ordenacao == 3:
+            query += " ORDER BY quantidade DESC"
+        elif ordenacao == 4:
+            query += " ORDER BY id_tipo ASC"
+        cursor.execute(query, (id_compra,))
         return cursor.fetchall()
 
 def atualizar_produto(id_prod, dados):

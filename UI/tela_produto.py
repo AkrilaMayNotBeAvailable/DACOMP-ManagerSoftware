@@ -1,51 +1,78 @@
 # ui/tela_produtos.py
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, IntVar
 from utils.customWidgets import criar_entradas
 from database import produtos_db as db
 from database.tipos_db import recuperar_tipos
 
 # TODO: Acessar os dados da COMPRA e poder alterar os dados nesta tela!
-
 class TelaProdutos(ctk.CTkFrame):
     def __init__(self, master, id_compra):
         super().__init__(master)
-        self.id_compra = id_compra[2]
-        self.grid(row=0, column=0, sticky="nsew")
+        self.radio = IntVar(value=0)
+        self.tipos = recuperar_tipos()
+        self.id_compra = id_compra # Chave de acesso para a compra
+        self.grid(row=0, column=0, sticky="nswe")
 
-        self.master.grid_rowconfigure(0, weight=1)
-        self.master.grid_columnconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0)
+        titulo_tela = f'Editando produtos da compra no: {id_compra[0]}, feito na data: {id_compra[1]}'
+        self.frame_title = ctk.CTkFrame(self)
+        self.frame_title.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.frame_title.grid_rowconfigure(0, weight=1)
+        self.frame_title.grid_columnconfigure(0, weight=1)
+        self.titulo = criar_entradas(self.frame_title, titulo_tela, titulo_tela, 0, 0, widget='title')
 
         self.base_widgets_product()
-
-        self.btn_voltar = ctk.CTkButton(self, text="Voltar para Compras", command=self.voltar)
-        self.btn_voltar.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-
-        self.botao_atualizar = ctk.CTkButton(self, text="Atualizar Produtos", command=self.atualizar_produtos)
-        self.botao_atualizar.grid(row=2, column=0, padx=5, pady=5)
-
-        self.frame_compras = ctk.CTkScrollableFrame(self, width=300, label_text="Itens da Compra", label_font=("Arial", 14, "bold"))
-        self.frame_compras.grid(row=1, column=0, columnspan=5, pady=10, sticky="nswe")
+        self.ordenador()
+        self.frame_compras = ctk.CTkScrollableFrame(self, label_text="Itens da Compra", label_font=("Arial", 14, "bold"))
+        self.frame_compras.grid(row=1, column=0, pady=10, padx=10, sticky="nswe")
         self.atualizar_lista_compras()
+        
 
     def base_widgets_product(self):
-        tipos = [t[1] for t in recuperar_tipos()]
+        tipos = [tipos[1] for tipos in self.tipos]
         
-        self.frame_formulario = ctk.CTkFrame(self)
-        self.frame_formulario.grid(row=0, column=0, padx=10, pady=10, sticky="nswe")
+        self.frame_formulario = ctk.CTkFrame(self.frame_title)
+        self.frame_formulario.grid(row=2, column=0, padx=10, pady=5, sticky="nswe")
+
+        self.frame_form_compras = ctk.CTkFrame(self.frame_title)
+        self.frame_form_compras.grid(row=1, column=0, padx=10, pady=5, sticky="nswe")
+
+        #Dados da Compra:
+        #------------------------------------------------
+        self.nome_compra_entry = criar_entradas(self.frame_form_compras, "Nome do Estabelecimento", self.id_compra[0], 0, 0, widget='entry_autofill')
+        self.data_encomenda_entry = criar_entradas(self.frame_form_compras, "Data de Entrega", self.id_compra[1], 0, 1, widget='entry_autofill')
+        self.valor_total_entry = criar_entradas(self.frame_form_compras, "Valor Total", self.id_compra[2], 0, 3, widget='entry_autofill')
+        
         # Interface de entrada de dados:
         #------------------------------------------------
-        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 0, 0, widget='entry')
-        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890123", 0, 1, widget='entry')
-        self.validade_entry = criar_entradas(self.frame_formulario, "Validade", "2025-12-31", 0, 2, widget='entry')
-        self.valor_unit_entry = criar_entradas(self.frame_formulario, "Valor Unitário", "0.00", 0, 3, widget='entry')
-        self.quantidade_entry = criar_entradas(self.frame_formulario, "Quantidade", "0", 0, 4, widget='entry')
-        self.combobox_tipo = criar_entradas(self.frame_formulario, "Tipo de Produto", tipos, 0, 5, widget='combobox')
+        self.nome_entry = criar_entradas(self.frame_formulario, "Nome do Produto", "Digite o nome", 1, 0, widget='entry')
+        self.cod_barras_entry = criar_entradas(self.frame_formulario, "Código de Barras", "Ex: 1234567890", 1, 1, widget='entry')
+        self.validade_entry = criar_entradas(self.frame_formulario, "Validade", "2025-12-31", 1, 2, widget='entry')
+        self.valor_unit_entry = criar_entradas(self.frame_formulario, "Valor Unitário", "0.00", 1, 3, widget='entry')
+        self.quantidade_entry = criar_entradas(self.frame_formulario, "Quantidade", "0", 1, 4, widget='entry')
+        self.combobox_tipo = criar_entradas(self.frame_formulario, "Tipo de Produto", tipos, 1, 5, widget='combobox')
+
         self.botao_salvar = ctk.CTkButton(self.frame_formulario, text="Salvar Produto", command=self.salvar_produto)
-        self.botao_salvar.grid(row=1, column=7)
+        self.btn_voltar = ctk.CTkButton(self.frame_formulario, text="Voltar para Compras", command=self.voltar)
+        self.botao_atualizar = ctk.CTkButton(self.frame_formulario, text="Atualizar Produtos", command=self.atualizar_produtos)
+        
+        self.botao_salvar.grid(row=2, column=6, pady=5, padx=5)
+        self.botao_atualizar.grid(row=3, column=1, pady=5, padx=5)
+        self.btn_voltar.grid(row=3, column=0, pady=5, padx=5)
+        
+    def ordenador(self):
+        self.ordenador_nome = ctk.CTkRadioButton(self.frame_formulario, text="Nome", variable=self.radio, value=1, command=self.atualizar_lista_compras)
+        self.ordenador_preco = ctk.CTkRadioButton(self.frame_formulario, text="Valor", variable=self.radio, value=2, command=self.atualizar_lista_compras)
+        self.ordenador_quantidade = ctk.CTkRadioButton(self.frame_formulario, text="Quantidade", variable=self.radio, value=3, command=self.atualizar_lista_compras)
+        self.ordenador_tipo = ctk.CTkRadioButton(self.frame_formulario, text="Tipo", variable=self.radio, value=4, command=self.atualizar_lista_compras)
+
+        self.ordenador_nome.grid(row=3, column=2, pady=5, padx=5)
+        self.ordenador_preco.grid(row=3, column=3, pady=5, padx=5)
+        self.ordenador_quantidade.grid(row=3, column=4, pady=5, padx=5)
+        self.ordenador_tipo.grid(row=3, column=5, pady=5, padx=5)
 
     def voltar(self):
         self.destroy()
@@ -56,8 +83,8 @@ class TelaProdutos(ctk.CTkFrame):
         for widget in self.frame_compras.winfo_children():
             widget.destroy()
 
-        dados = db.recuperar_produtos_por_compra(self.id_compra)
-        tipos = recuperar_tipos()
+        dados = db.recuperar_produtos_por_compra(self.id_compra[3], self.radio.get())
+        tipos = self.tipos
 
         for i, dado in enumerate(dados):
             row = i * 2
@@ -102,7 +129,7 @@ class TelaProdutos(ctk.CTkFrame):
             return
 
         id_tipo = tipo_result[0]
-        dados = (self.id_compra, id_tipo, validade, cod_barras, nome, valor_unit, quantidade, quantidade)
+        dados = (self.id_compra[3], id_tipo, validade, cod_barras, nome, valor_unit, quantidade, quantidade)
 
         try:
             db.inserir_produto(dados)

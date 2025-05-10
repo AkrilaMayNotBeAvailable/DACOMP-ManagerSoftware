@@ -96,6 +96,34 @@ def inicializar_banco():
             FOREIGN KEY (id_combo) REFERENCES combos (id),
             FOREIGN KEY (id_produto) REFERENCES produtos (id)
         )""")
+    
+    # Vendas por tipo
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS vendas_tipos (
+        id INTEGER PRIMARY KEY,
+        id_tipo INTEGER,
+        data_venda DATE,
+        quantidade_pix INTEGER DEFAULT 0,
+        quantidade_dinheiro INTEGER DEFAULT 0,
+        valor_total REAL DEFAULT 0,
+        valor_unit REAL DEFAULT 0,
+        lucro_liquido REAL DEFAULT 0,
+        UNIQUE(id_tipo, data_venda, valor_unit)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS tabela_auxiliar_FIFO (
+        id_venda INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_tipo INTEGER,
+        id_produto INTEGER,
+        quantidade INTEGER,
+        valor_unit REAL,
+        valor_venda REAL,
+        data_venda DATE
+    )
+    """)
+    
 
     conn.commit()
     conn.close()
