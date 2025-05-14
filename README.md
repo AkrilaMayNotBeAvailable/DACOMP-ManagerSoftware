@@ -4,9 +4,8 @@ Aplicativo de gerenciamento de negócios do DACOMP (Diretório Acadêmico de Com
 Layout de Caixa (14/05/2025):
 ![novoLayout2](https://github.com/user-attachments/assets/3dc599ba-7b2c-46dc-b7b1-7e4917d1b0d1)
 
-
-Diagrama de relações - Database de produtos local:
-https://drive.google.com/file/d/1Pk-Ew_HcH98pEhAjWnRxKb5jGtqEyC76/view?usp=drive_link
+Documento de histórico: \
+https://docs.google.com/document/d/15gvVVDlIYyTAx8SL1ghYugt3CHdxX9t92qUfAy7_dBg/edit?usp=sharing
 
 # Desenvolvedores:
 
