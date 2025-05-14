@@ -55,8 +55,8 @@ class TelaTipos(ctk.CTkFrame):
         self.atualizar_tipos()
 
     def voltar(self):
-        self.destroy()
-        self.master.abrir_tela_compras()
+        #self.destroy()
+        self.master.trocar_tela("compras")
 
 
     ''' Database Related Functions:

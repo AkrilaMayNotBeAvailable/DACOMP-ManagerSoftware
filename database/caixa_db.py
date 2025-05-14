@@ -1,4 +1,4 @@
-# database/caixa_db.py7
+# database/caixa_db.py
 from database.setup_db import conectar
 import sqlite3
 
@@ -130,17 +130,17 @@ def reverter_venda(id_tipo, quantidade, forma_pagamento):
 
 
 
-def carregar_dados_vendas_do_dia(lista_produtos):
+def carregar_dados_vendas_do_dia(lista_produtos, data):
     try:
         with conectar() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT id_tipo, quantidade_pix, quantidade_dinheiro, valor_unit 
                 FROM vendas_tipos 
-                WHERE data_venda = DATE('now', '-03:00')
-            """)
+                WHERE data_venda = ?
+            """, (data,))
             registros = cursor.fetchall()
-            #print(f"[ATUALIZAR] Registros encontrados: {registros}")
+            print(f"[ATUALIZAR] Registros encontrados: {registros}")
 
             vendas_por_tipo = {}
             for id_tipo, qtd_pix, qtd_dinheiro, valor_unit in registros:
@@ -161,3 +161,69 @@ def carregar_dados_vendas_do_dia(lista_produtos):
 
     except Exception as e:
         print("Erro ao carregar vendas do dia:", e)
+
+def buscar_caixa():
+    try:
+        with conectar() as conn:
+            cursor = conn.cursor()
+            cursor.execute(""" 
+                SELECT data_venda FROM vendas_tipos
+                LIMIT 30
+            """)
+            caixa = cursor.fetchall()
+            print(f"[BUSCAR] Registros encontrados: {caixa}")
+            # Se não houver registros, retorna uma lista vazia
+            if not caixa:
+                return []
+            # Se houver registros, retorna a lista de caixas
+            return [item[0] for item in caixa]
+    except sqlite3.Error as e:
+        print(f"Erro ao buscar caixa: {e}")
+        return []
+            
+def get_estoque(tipo_id):
+    try:
+        with conectar() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT estoque FROM produtos WHERE id_tipo = ?
+            """, (tipo_id,))
+            estoque = cursor.fetchall()
+
+            # Se não houver registros, retorna 0
+            if not estoque:
+                return 0
+            # Se houver registros, retorna a soma dos estoques
+            return sum(item[0] for item in estoque)
+    except sqlite3.Error as e:
+        print(f"Erro ao buscar estoque: {e}")
+        return 0
+    
+def get_valor_unit(tipo_id):
+    try:
+        with conectar() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT valor_unit 
+                FROM produtos 
+                WHERE id_tipo = ? AND estoque > 0
+                ORDER BY id ASC
+            """, (tipo_id,))
+            valor_unit = cursor.fetchall()
+            cursor.execute("""
+                SELECT valor 
+                FROM tipos 
+                WHERE id = ?
+                ORDER BY id ASC
+            """, (tipo_id,))
+            valor_venda = cursor.fetchall()
+            print(f"[BUSCAR] Valor de venda encontrado: {valor_venda}")
+            print(f"[BUSCAR] Valor unitário encontrado: {valor_unit}")
+            # Se não houver registros, retorna 0
+            if not valor_unit:
+                return 0
+            # Se houver registros, retorna o valor unitário
+            return valor_venda[0][0] - valor_unit[0][0]
+    except sqlite3.Error as e:
+        print(f"Erro ao buscar valor unitário: {e}")
+        return 0
