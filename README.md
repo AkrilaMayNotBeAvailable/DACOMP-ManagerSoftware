@@ -1,8 +1,8 @@
 # DACOMP-ManagerSoftware
-Aplicativo de gerenciamento de negócios do DACOMP (Diretório Acadêmico de Computação)
+Aplicativo de gerenciamento de negócios do DACOMP (Diretório Acadêmico de Computação) da Universidade Federal do Rio Grande do Sul (UFRGS)
 
-Layout de Caixa (09/05/2025):
-![novoLayout](https://github.com/user-attachments/assets/a0681bdb-62c1-4005-9d3c-b1826480d551)
+Layout de Caixa (14/05/2025):
+![novoLayout2](https://github.com/user-attachments/assets/3dc599ba-7b2c-46dc-b7b1-7e4917d1b0d1)
 
 
 Diagrama de relações - Database de produtos local:
@@ -15,15 +15,17 @@ https://drive.google.com/file/d/1Pk-Ew_HcH98pEhAjWnRxKb5jGtqEyC76/view?usp=drive
 
 # TODO:
 
- Subtração do estoque no primeiro da pilha daquele tipo (PRIORIDADE ALTA) \
- Impressao como caso combo. (PRIORIDADE ALTA) \
- Implementar funcionalidade dos botões "Gerar estatisticas do dia" e "Fechar Caixa" (PRIORIDADE ALTA) \
- Implementar tabela de DB do caixa diário. (PRIORIDADE ALTA) \
- Implementar messagebox quando ocorrerem erros por parte do usuário (PRIORIDADE ALTA)
+ Subtração do estoque no primeiro da pilha daquele tipo (PRIORIDADE ALTA) -- STATUS: [CONCLUÍDO] \
+ Impressao como caso combo. (promoções) (PRIORIDADE ALTA) -- STATUS: [NÃO REALIZADO] \
+ Implementar funcionalidade dos botões "Gerar estatisticas do dia" (PRIORIDADE ALTA) -- STATUS: [CONCLUÍDO] \
+ Implementar tabela de DB do caixa diário. (PRIORIDADE ALTA) -- STATUS: [CONCLUÍDO] \
+ Implementar messagebox quando ocorrerem erros por parte do usuário (PRIORIDADE ALTA) -- STATUS: [PARCIALMENTE CONCLUÍDO]
+ Implementar estatísticas semanais, mensais, trimestrais e anuais. (PRIORIDADE ALTA) -- STATUS: [NÃO REALIZADO]
 
-Tabela de perdas: quando vendermos uma barrinha e não tiver nehuma disponivel na tabela estoque(produtos) marcar +1 na tabela de perdas naquele tipo especifico. (PRIORIDADE MÉDIA)\
-Implementar caso em que o CAFÉ pode ser vendido em METADE. (PRIORIDADE MÉDIA)
+Tabela de perdas: quando vendermos uma barrinha e não tiver nehuma disponivel na tabela estoque(produtos) marcar +1 na tabela de perdas naquele tipo especifico. (PRIORIDADE MÉDIA) [NÃO REALIZADO]\
+Implementar caso em que o CAFÉ pode ser vendido em METADE. [NÃO REALIZADO] [ALTERA DATABASE] (PRIORIDADE MÉDIA)
 
+---
 Melhorias de interface (PRIORIDADE BAIXA)\
 Otimização de widgets (PRIORIDADE BAIXA)\
 Documentação (PRIORIDADE BAIXA)\
