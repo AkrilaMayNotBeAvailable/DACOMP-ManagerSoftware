@@ -51,26 +51,45 @@ def create_spinner(master, row=0, column=0, columnspan=1, initial_value="0", on_
 
 # Auxiliar para criar entradas de texto:
 #------------------------------------------------
-def widget_prototype_product(frame, label_txt, tipo_id, preco, base_row, col):
+def widget_prototype_product(frame, label_txt, tipo_id, preco, base_row, col, estoque='padrao', qtd_estoque=0, lucro=0):
+    def atualizar_estoque():
+        qtd_estoque = db.get_estoque(tipo_id)
+        lucro = db.get_valor_unit(tipo_id)
+        if qtd_estoque == 0:
+            product['frame'].configure(fg_color="#450E21")
+            product['subframe'].configure(fg_color="#550E21")
+            product['warning'].configure(text="Sem Estoque favor verificar sistema de compras e atualizar dados")
+            product['lucro'].configure(text=f'Lucro: R$ 0.00')
+        else:
+            product['frame'].configure(fg_color="#0E2145")
+            product['subframe'].configure(fg_color="#0E2155")
+            product['warning'].configure(text=f'Quantidade em Estoque: {qtd_estoque}')
+            product['lucro'].configure(text=f'Lucro: R$ {lucro:.2f}')
+
     def on_pix_change(new_value, delta):
         db.registrar_venda(tipo_id, 1, "pix")
+        atualizar_estoque()
 
     def on_pix_revert(new_value, delta):
         db.reverter_venda(tipo_id, 1, "pix")
+        atualizar_estoque()
 
     def on_money_change(new_value, delta):
         db.registrar_venda(tipo_id, 1, "dinheiro")
+        atualizar_estoque()
 
     def on_money_revert(new_value, delta):
         db.reverter_venda(tipo_id, 1, "dinheiro")
+        atualizar_estoque()
 
     product = {}
     product['frame'] = ctk.CTkFrame(frame)
     product['frame'].grid(row=base_row, column=col, padx=10, pady=10, sticky="nswe")
-    product['frame'].grid_rowconfigure(0, weight=1)
-    product['frame'].grid_rowconfigure(1, weight=0)  # Linha do dinheiro e pix
-    product['frame'].grid_columnconfigure(0, weight=1)  # Expande o nome
-    
+    #product['frame'].grid_rowconfigure(0, weight=1)
+    #product['frame'].grid_rowconfigure(1, weight=0)  # Linha do dinheiro e pix
+    for i in range(7):
+        product['frame'].grid_columnconfigure(i, weight=1)
+
     product['subframe'] = ctk.CTkFrame(product['frame']) # A porcaria do frame que tem que ter o columnspan
     product['subframe'].grid(row=0, column=0, columnspan=8, padx=5, pady=5, sticky="we")
 
@@ -94,12 +113,43 @@ def widget_prototype_product(frame, label_txt, tipo_id, preco, base_row, col):
 
     # Pix
     product['pix'] = ctk.CTkLabel(product['frame'], text="PIX: ")
-    product['pix'].grid(row=1, column=4, sticky="w", padx=5)
+    product['pix'].grid(row=1, column=4, sticky="we", padx=5)
     spinner_widgets_pix = create_spinner(product['frame'], row=1, column=5, columnspan=3, on_change=on_pix_change, on_revert=on_pix_revert)
     product['pix_entry'] = spinner_widgets_pix["entry"]
 
     product['tipo_id'] = tipo_id
 
+
+    if estoque == 'sem_estoque':
+        product['frame'].configure(fg_color="#450E21")
+        product['subframe'].configure(fg_color="#550E21")
+        product['warning'] = ctk.CTkLabel(
+            product['subframe'], 
+            text="Sem Estoque favor verificar sistema de compras e atualizar dados",  
+            font=("Arial", 12, "bold"),
+            width=400,
+            anchor="w"
+        )
+        product['warning'].grid(row=1, column=0, padx=5, sticky="we")
+
+    else:
+        product['frame'].configure(fg_color="#0E2145")
+        product['subframe'].configure(fg_color="#0E2155")
+        product['warning'] = ctk.CTkLabel(
+            product['subframe'], 
+            text=f'Quantidade em Estoque: {qtd_estoque}',  
+            font=("Arial", 12, "bold"),
+            width=400,
+            anchor="w"
+        )
+        product['warning'].grid(row=1, column=0, padx=5, sticky="we")
+
+    product['lucro'] = ctk.CTkLabel(
+        product['subframe'],
+        text=f'Lucro: R$ {lucro:.2f}',
+        font=("Arial", 12, "bold")
+    )
+    product['lucro'].grid(row=1, column=2, padx=5, sticky="e")
     return product
 #------------------------------------------------
 

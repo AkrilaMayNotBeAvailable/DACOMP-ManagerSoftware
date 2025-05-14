@@ -75,8 +75,8 @@ class TelaProdutos(ctk.CTkFrame):
         self.ordenador_tipo.grid(row=3, column=5, pady=5, padx=5)
 
     def voltar(self):
-        self.destroy()
-        self.master.abrir_tela_compras()
+        #self.destroy()
+        self.master.trocar_tela("compras")
 
     def atualizar_lista_compras(self):
         self.entries_produtos = []
