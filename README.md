@@ -5,7 +5,9 @@ Layout de Caixa (14/05/2025):
 ![novoLayout2](https://github.com/user-attachments/assets/3dc599ba-7b2c-46dc-b7b1-7e4917d1b0d1)
 
 Documento de histórico: \
-https://docs.google.com/document/d/15gvVVDlIYyTAx8SL1ghYugt3CHdxX9t92qUfAy7_dBg/edit?usp=sharing
+https://docs.google.com/document/d/15gvVVDlIYyTAx8SL1ghYugt3CHdxX9t92qUfAy7_dBg/edit?usp=sharing \
+Documento de Apresentação e Tutorial: \
+https://docs.google.com/presentation/d/13cYrP_EI0Anc_b6n-SyeryFu0VYx9BA8RaPlhEw2y4s/edit?usp=sharing
 
 # Desenvolvedores:
 
