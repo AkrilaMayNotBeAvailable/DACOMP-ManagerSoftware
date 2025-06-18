@@ -5,7 +5,7 @@ from utils.sqliteAux import formatar_valor_para_sqlite
 import database.promo_db as promo_db
 
 '''
-    Conveções:
+    Convenções:
         Variáveis:
             snake_case/lowercase
             para botões, usar o sufixo "_btn"
