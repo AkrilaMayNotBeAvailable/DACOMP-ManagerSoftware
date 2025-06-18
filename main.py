@@ -11,6 +11,7 @@ from UI.tela_produto import TelaProdutos
 from UI.tela_tipos import TelaTipos
 from UI.tela_compras import TelaCompras
 from UI.tela_estatisticas import TelaEstatisticas
+from UI.tela_promos import TelaPromos
 
 def uso_de_memoria_ram(pid):
     try:
@@ -79,6 +80,8 @@ class App(ctk.CTk):
                 self.telas[nome_tela] = TelaTipos(self)
             elif nome_tela == "estatisticas":
                 self.telas[nome_tela] = TelaEstatisticas(self, *args)
+            elif nome_tela == "promos":
+                self.telas[nome_tela] = TelaPromos(self)
 
             self.telas[nome_tela].grid(row=0, column=0, sticky="nsew")
             self.argumentos[nome_tela] = argumentos_novos  # Atualiza os argumentos
@@ -102,6 +105,9 @@ class App(ctk.CTk):
 
     def abrir_tela_estatisticas(self, data):
         self.trocar_tela("estatisticas", data)
+
+    def abrir_tela_promos(self):
+        self.trocar_tela("promos")
 
 if __name__ == "__main__":
     app = App()

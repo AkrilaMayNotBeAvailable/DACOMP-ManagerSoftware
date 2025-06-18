@@ -6,7 +6,7 @@ from utils.customWidgets import criar_entradas
 import utils.sqliteAux as sqliteAux
 from datetime import date
 from PIL import Image, ImageTk
-import pywinstyles
+#import pywinstyles
 
 class TelaCompras(ctk.CTkFrame):
     def __init__(self, master):
@@ -22,7 +22,7 @@ class TelaCompras(ctk.CTkFrame):
         # -- Frescura
         #--------------------------------------------------------
         try:
-            image = Image.open("bg.jpg") # Inserir caminho para imagem de fundo
+            image = Image.open("bg.png") # Inserir caminho para imagem de fundo
             
             ctk_image = ctk.CTkImage(light_image=image,
             dark_image=image, 
@@ -61,8 +61,8 @@ class TelaCompras(ctk.CTkFrame):
         caixas.grid_rowconfigure(0, weight=1)
         caixas.grid_columnconfigure(0, weight=1)
         caixas.grid_columnconfigure(1, weight=1)
-        pywinstyles.set_opacity(purchases, color="#000001")
-        pywinstyles.set_opacity(caixas, color="#000001")
+        #pywinstyles.set_opacity(purchases, color="#000001")
+        #pywinstyles.set_opacity(caixas, color="#000001")
 
 
         self.campos = self.inicializar_tela_de_compras(purchases)
@@ -131,11 +131,15 @@ class TelaCompras(ctk.CTkFrame):
         campos['abrir_tipos'] = ctk.CTkButton(
             campos['compras'], text="Abrir Tipos", command=self.abrir_tela_tipos
         )
+        campos['abrir promos'] = ctk.CTkButton(
+            campos['compras'], text="Abrir Promoções", command=lambda: self.master.trocar_tela("promos")
+        )
+
 
         campos['submit'].grid(row=11, column=0, padx=5, pady=(15, 5), sticky="we")
         campos['abrir_caixa'].grid(row=13, column=0, padx=5, pady=5, sticky="we")
         campos['abrir_tipos'].grid(row=15, column=0, padx=5, pady=5, sticky="we")
-
+        campos['abrir promos'].grid(row=17, column=0, padx=5, pady=5, sticky="we")
         return campos
 
     def inicializar_historico_caixa(self, frame):

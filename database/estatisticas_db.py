@@ -25,7 +25,7 @@ def recuperar_mais_vendido(data):
         mais_vendido = cursor.fetchone()
         if mais_vendido:
             id_tipo, quantidade_pix, quantidade_dinheiro = mais_vendido
-            cursor.execute("SELECT tipo FROM tipos WHERE id = ?", (id_tipo,))
+            cursor.execute("SELECT Nome_Tipo FROM Tipo WHERE ID_Tipo = ?", (id_tipo,))
             tipo_produto = cursor.fetchone()[0]
             return tipo_produto, quantidade_pix + quantidade_dinheiro
         else:

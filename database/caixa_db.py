@@ -8,7 +8,7 @@ def registrar_venda(id_tipo, quantidade, forma_pagamento):
         with conectar() as conn:
             cursor = conn.cursor()
 
-            cursor.execute("SELECT valor FROM tipos WHERE id = ?", (id_tipo,))
+            cursor.execute("SELECT Valor_de_Venda FROM Tipo WHERE ID_Tipo = ?", (id_tipo,))
             valor_venda = cursor.fetchone()[0]
 
             quantidade_restante = quantidade
@@ -67,7 +67,7 @@ def reverter_venda(id_tipo, quantidade, forma_pagamento):
         with conectar() as conn:
             cursor = conn.cursor()
 
-            cursor.execute("SELECT valor FROM tipos WHERE id = ?", (id_tipo,))
+            cursor.execute("SELECT Valor_de_Venda FROM Tipo WHERE ID_Tipo = ?", (id_tipo,))
             resultado = cursor.fetchone()
             if not resultado:
                 return
@@ -126,9 +126,6 @@ def reverter_venda(id_tipo, quantidade, forma_pagamento):
             print(f"[REVERTER] Reversão finalizada para tipo {id_tipo}, forma: {forma_pagamento}, qtd: {quantidade}, lucro revertido: {lucro_liquido_reverter:.2f}")
     except Exception as e:
         print("Erro ao reverter venda:", e)
-
-
-
 
 def carregar_dados_vendas_do_dia(lista_produtos, data):
     try:
@@ -211,10 +208,10 @@ def get_valor_unit(tipo_id):
             """, (tipo_id,))
             valor_unit = cursor.fetchall()
             cursor.execute("""
-                SELECT valor 
-                FROM tipos 
-                WHERE id = ?
-                ORDER BY id ASC
+                SELECT Valor_de_Venda 
+                FROM Tipo 
+                WHERE ID_Tipo = ?
+                ORDER BY ID_Tipo ASC
             """, (tipo_id,))
             valor_venda = cursor.fetchall()
             print(f"[BUSCAR] Valor de venda encontrado: {valor_venda}")
