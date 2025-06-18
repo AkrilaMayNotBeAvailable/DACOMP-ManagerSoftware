@@ -51,17 +51,21 @@ def inicializar_banco():
         )""")
 
     # Tabela de tipos
+    #---------------------
+    # A tabela Tipo armazena os tipos de produtos disponíveis no sistema.
+    # Cada tipo tem um ID único, um nome e um valor de venda.
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS tipos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tipo TEXT UNIQUE,
-            valor REAL
-        )""")
+        CREATE TABLE IF NOT EXISTS Tipo (
+            ID_Tipo INTEGER PRIMARY KEY AUTOINCREMENT,
+            Nome_Tipo TEXT NOT NULL,
+            Valor_de_Venda REAL DEFAULT 0
+        );
+    """)
 
     # Dados iniciais (só se o banco não existia)
     if not banco_existe:
         cursor.execute("""
-            INSERT OR IGNORE INTO tipos (tipo, valor) VALUES
+            INSERT OR IGNORE INTO Tipo (Nome_Tipo, Valor_de_Venda) VALUES
             ('Barra de Cereal Ritter', 2.50),
             ('Coca-Cola', 4.00),
             ('Trento', 2.50),
@@ -69,35 +73,37 @@ def inicializar_banco():
             ('Monster', 10.00)
         """)
 
-    # Relação entre produtos e tipos (se precisar no futuro)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS produtos_tipos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_tipo INTEGER,
-            id_produto INTEGER,
-            FOREIGN KEY (id_tipo) REFERENCES tipos (id),
-            FOREIGN KEY (id_produto) REFERENCES produtos (id)
-        )""")
-
     # Tabela de combos
+    #---------------------
+    # Combos (promoções) são conjuntos de tipos que podem ser vendidos juntos.
+    # Cada combo tem um nome e um valor de venda.
+    # A tabela combos armazena os combos disponíveis.
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS combos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT UNIQUE,
-            valor REAL
-        )""")
-
-    # Relação entre combos e produtos
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS produtos_combos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_combo INTEGER,
-            id_produto INTEGER,
-            FOREIGN KEY (id_combo) REFERENCES combos (id),
-            FOREIGN KEY (id_produto) REFERENCES produtos (id)
+        CREATE TABLE IF NOT EXISTS Combos (
+            ID_Combo INTEGER PRIMARY KEY AUTOINCREMENT,
+            Nome_Combo TEXT UNIQUE,
+            Valor_Venda REAL DEFAULT 0
         )""")
     
+    # Tabela de tipos em combos
+    #---------------------
+    # A tabela Combo_Tipo relaciona os tipos aos combos.
+    # Cada entrada nesta tabela indica que um tipo específico faz parte de um combo.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Combo_Tipo (
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            ID_Tipo INTEGER,
+            ID_Combo INTEGER,
+            FOREIGN KEY(ID_Tipo) REFERENCES Tipo(ID_Tipo),
+            FOREIGN KEY(ID_Combo) REFERENCES Combo(ID_Combo)
+        );
+    """)
+    
     # Vendas por tipo
+    #---------------------
+    # Esta tabela registra as vendas agregadas por tipo de produto.
+    # Cada entrada contém a data da venda, a quantidade vendida por forma de pagamento (PIX ou dinheiro),
+    # o valor total da venda, o valor unitário e o lucro líquido.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS vendas_tipos (
         id INTEGER PRIMARY KEY,
@@ -112,6 +118,11 @@ def inicializar_banco():
     )
     """)
 
+    # Tabela auxiliar FIFO
+    #---------------------
+    # Esta tabela auxilia no controle de estoque utilizando o método FIFO (First In, First Out).
+    # Cada venda registrada aqui contém o ID do tipo, ID do produto, quantidade vendida,
+    # valor unitário, valor de venda e a data da venda.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS tabela_auxiliar_FIFO (
         id_venda INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,6 +135,5 @@ def inicializar_banco():
     )
     """)
     
-
     conn.commit()
     conn.close()

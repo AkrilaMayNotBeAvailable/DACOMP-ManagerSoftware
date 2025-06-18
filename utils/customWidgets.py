@@ -175,7 +175,7 @@ def widget_scrollable_form(frame, row=0, column=0, columnspan=1):
     Retorna um dicionário com o label e o widget criado. 
         >> Chaves: 'label', 'entry' ou 'combobox'.
 '''
-def criar_entradas(frame, label_txt='N/A', placeholder='', base_row=0, col=0, widget='title', ): # mudei isso
+def criar_entradas(frame, label_txt='N/A', placeholder='', base_row=0, col=0, widget='title'): # mudei isso
     custom_widget = {}
     
 
@@ -205,3 +205,26 @@ def criar_entradas(frame, label_txt='N/A', placeholder='', base_row=0, col=0, wi
         custom_widget['combobox'] = entry
 
     return custom_widget
+
+def sorting_widget(row=0, column=0, columnspan=6, frame=None, controller=None, on_change=None, sort_screen=""):
+    sorting_widget = {}
+    sorting_widget["custom_sort_radio_frame"] = ctk.CTkFrame(frame)
+    sorting_widget["custom_sort_radio_frame"].grid(row=row, column=column, columnspan=columnspan, sticky="n")
+
+    sorting_widget["title"] = ctk.CTkLabel(sorting_widget["custom_sort_radio_frame"], text="Ordenar por:")
+    sorting_widget["title"].grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+    
+    # Configuração do controlador de ordenação para a tela de tipos:
+    if sort_screen.lower() == "tipos":
+        sorting_widget["ordenador_id"] = ctk.CTkRadioButton(sorting_widget["custom_sort_radio_frame"], text="Entrada", variable=controller, value=1)
+        sorting_widget["ordenador_nome"] = ctk.CTkRadioButton(sorting_widget["custom_sort_radio_frame"], text="Nome", variable=controller, value=2)
+        sorting_widget["ordenador_categoria"] = ctk.CTkRadioButton(sorting_widget["custom_sort_radio_frame"], text="Categoria", variable=controller, value=3)
+        sorting_widget["ordenador_valor"] = ctk.CTkRadioButton(sorting_widget["custom_sort_radio_frame"], text="Valor", variable=controller, value=4)
+
+    if on_change and sort_screen.lower() == "tipos":
+        sorting_widget["ordenador_id"].configure(command=on_change)
+        sorting_widget["ordenador_nome"].configure(command=on_change)
+        sorting_widget["ordenador_categoria"].configure(command=on_change)
+        sorting_widget["ordenador_valor"].configure(command=on_change)
+        
+    return sorting_widget

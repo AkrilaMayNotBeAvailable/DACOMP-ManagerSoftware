@@ -10,13 +10,17 @@ DACOMP-BusinessManager/
 │   └── tela_tipos.py       # Interface de tipos de produtos
 │   └── tela_compras.py     # Interface de compras
 │   └── tela_caixa.py       # Interface de caixa
+│   └── tela_promo.py       # Interface de promoções
 │   └── tela_estatisticas.py # Interface de análise de dados
 │
 ├── database/               # Camada de dados
 │   ├── setup_db.py         # Funções de configuração do banco de dados / Inicialização / Conexão
-│   ├── compras.py          # DB - CRUD de compras
-│   ├── produtos.py         # DB - CRUD de produtos
-│   └── tipos.py            # DB - CRUD de tipos de produtos
+│   ├── compras_db.py          # DB - CRUD de compras
+│   ├── produtos_db.py         # DB - CRUD de produtos
+│   ├── caixa_db.py            # DB - Recuperação de dados e outras utilidades
+│   ├── estatisticas_db.py     # DB - Recuperação de dados para análise
+│   ├── tipos_db.py            # DB - CRUD de tipos de produtos
+│   └── promo_db.py            # DB - CRUD de promoções a partir de tipos de produtos
 │
 ├── utils/
 │   └── customtkinter.py    # CustomTkinter - biblioteca de widgets customizados (Criados por AkrilaMayNotBeAvailable)

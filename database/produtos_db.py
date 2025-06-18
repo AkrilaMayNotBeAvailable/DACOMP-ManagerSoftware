@@ -16,7 +16,7 @@ def gerar_codigo_barras_unico():
 def buscar_id_tipo_por_nome(tipo_nome):
     with conectar() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM tipos WHERE tipo = ?", (tipo_nome,))
+        cursor.execute("SELECT ID_Tipo FROM Tipo WHERE Nome_Tipo = ?", (tipo_nome,))
         return cursor.fetchone()
 
 '''
@@ -65,3 +65,11 @@ def remover_produto(id_produto):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM produtos WHERE id = ?", (id_produto,))
         conn.commit()
+
+def load_database_produtos():
+    with conectar() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id_tipo, estoque FROM produtos ORDER BY id_tipo ASC")
+        produtos = cursor.fetchall()
+
+        return produtos
